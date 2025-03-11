@@ -59,10 +59,35 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setAccessToken("");
-    sessionStorage.removeItem("accessToken");
+  /**
+   * Logs out the user and clears tokens across tabs.
+   */
+  const logout = async () => {
+    try {
+      await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
+      setAccessToken("");
+      sessionStorage.removeItem("accessToken");
+      localStorage.setItem("logout", Date.now().toString()); // 🔥 Sync logout across tabs
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.error("Logout failed.", error);
+    }
   };
+
+  // 🔄 Listen for logout events across tabs
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "logout") {
+        console.log("Logout detected from another tab.");
+        setAccessToken("");
+        sessionStorage.removeItem("accessToken");
+        navigate("/", { replace: true });
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   const refreshAccessToken = async () => {
     try {

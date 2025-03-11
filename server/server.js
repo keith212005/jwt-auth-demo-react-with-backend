@@ -7,10 +7,19 @@ const cookieParser = require("cookie-parser");
 dotenv.config();
 const app = express();
 app.use(express.json());
+// ✅ Allow multiple frontend origins
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
+
 app.use(
   cors({
-    origin: "http://localhost:5173", // ✅ Allow frontend origin explicitly
-    credentials: true, // ✅ Allow cookies and authorization headers
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // ✅ Allows cookies to be sent
   })
 );
 app.use(cookieParser());
@@ -76,6 +85,27 @@ app.post("/refresh", (req, res) => {
 // Protected API Route
 app.get("/protected", authenticateToken, (req, res) => {
   res.json({ message: "You have accessed a protected route!", user: req.user });
+});
+
+// Logout API - Clears refresh token and removes it from storage
+app.post("/logout", (req, res) => {
+  const token = req.cookies.refreshToken;
+
+  if (!token) {
+    return res.status(400).json({ message: "No refresh token found" });
+  }
+
+  // Remove the token from stored refresh tokens
+  refreshTokens = refreshTokens.filter((t) => t !== token);
+
+  // Clear the refresh token from cookies
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: false, // Set to true in production (for HTTPS)
+    sameSite: "Strict",
+  });
+
+  res.json({ message: "Logged out successfully" });
 });
 
 /**
