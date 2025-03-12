@@ -1,47 +1,3 @@
-# Full-Stack JWT Authentication with React + Vite + Express
-
-This project is a **full-stack authentication system** built with:
-
-- **Frontend:** React + Vite
-- **Backend:** Express.js with JWT authentication
-- **Authentication:** JWT-based authentication using access & refresh tokens
-- **Security:** HTTP-only cookies for refresh tokens, state-based access tokens
-- **State Management:** Context API for authentication handling
-
-## 🚀 Features
-
-- **User authentication** with access & refresh tokens
-- **Automatic access token refresh**
-- **Secure refresh token storage** using HTTP-only cookies
-- **Protected routes with authentication guard**
-- **Full Express backend integrated**
-
----
-
-## 📂 Folder Structure
-
-```
-jwt-auth-demo-react/
-│── server/              # Backend (Express)
-│   ├── server.js        # Express server with JWT authentication
-│   ├── package.json     # Backend dependencies
-│   ├── .env            # Environment variables for backend
-│   ├── ...other files
-│
-│── src/                 # Frontend (React)
-│   ├── components/      # UI components
-│   ├── contexts/        # AuthProvider (handles authentication state)
-│   ├── pages/           # Login and Dashboard pages
-│   ├── App.tsx          # Main App component
-│   ├── main.tsx         # React entry point
-│
-│── package.json         # Frontend dependencies
-│── vite.config.js       # Vite configuration
-│── README.md            # Project documentation
-```
-
----
-
 ## 🛠 Installation & Setup
 
 ### **1. Clone the Repository**
@@ -65,12 +21,27 @@ cd jwt-auth-demo-react
 
 ### **3. Set Up Environment Variables**
 
+#### **Backend (`server/.env`)**
+
 Inside `server/`, create a `.env` file:
 
 ```env
 PORT=5001
 SECRET_KEY=mysecretkey
 REFRESH_SECRET=myrefreshsecret
+NODE_ENV=development
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174
+```
+
+#### **Frontend (`.env`)**
+
+Inside the root project folder (`jwt-auth-demo-react/`), create a `.env` file:
+
+```env
+VITE_API_URL=http://localhost:5001
+VITE_APP_NAME=JWTAuthDemo
+VITE_ENV=development
+VITE_DEBUG=true
 ```
 
 ### **4. Start the Backend**
@@ -156,6 +127,7 @@ npm start
 
 - **Access token is stored in React state** (not localStorage for security reasons).
 - **Refresh token is stored in HTTP-only cookies** (not accessible by JavaScript).
+- **Environment variables** are used in both frontend and backend (`.env` files must be set up correctly).
 - Designed for **secure authentication** with **automatic token refresh**.
 
 ---
