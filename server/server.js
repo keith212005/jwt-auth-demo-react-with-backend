@@ -28,8 +28,8 @@ const users = [{ id: 1, username: "test", password: "password" }];
 const accessExpiresIn = "1m";
 const refreshExpiresIn = "1m";
 
-const SECRET_KEY = "mysecretkey";
-const REFRESH_SECRET = "myrefreshsecret";
+const SECRET_KEY = process.env.SECRET_KEY;
+const REFRESH_SECRET = process.env.REFRESH_SECRET;
 let refreshTokens = [];
 
 app.get("/", (req, res) => {
@@ -54,7 +54,7 @@ app.post("/login", (req, res) => {
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: false, // Use only in HTTPS
+    secure: process.env.NODE_ENV === "production", // ✅ Secure in production
     sameSite: "Strict",
   });
 

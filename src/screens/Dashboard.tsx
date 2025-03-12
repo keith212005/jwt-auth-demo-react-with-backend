@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import Details from "../components/Details";
 import { useAuth } from "../contexts/AuthProvider";
 import axios from "axios";
-import { API_URL } from "../constants/constants";
-import { useNavigate } from "react-router";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const { accessToken, logout, accessProtectedRoute } = useAuth();
   const [message, setMessage] = useState("");
 
@@ -35,14 +34,13 @@ const Dashboard = () => {
     <div>
       <h1>Dashboard</h1>
       <Details />
-
       {accessToken && <p>Access Token: {accessToken}</p>}
-
       <button onClick={handleAccessProtectedRoute}>
         Access Protected Route
       </button>
+      <br />
       {message && <p>{message}</p>}
-
+      <br /> <br />
       <button onClick={logout}>Logout</button>
     </div>
   );

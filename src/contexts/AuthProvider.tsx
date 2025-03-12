@@ -1,8 +1,9 @@
 import React from "react";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
-import { API_URL } from "../constants/constants";
 import { useNavigate } from "react-router";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const AuthContext = createContext({
   accessToken: "",
@@ -22,6 +23,7 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
+  console.log("API_URL", API_URL);
   const [accessToken, setAccessToken] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
