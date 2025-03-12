@@ -7,10 +7,8 @@ import { useNavigate } from "react-router";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { accessToken, logout, refreshAccessToken } = useAuth();
+  const { accessToken, logout, accessProtectedRoute } = useAuth();
   const [message, setMessage] = useState("");
-
-  const [data, setData] = useState("");
 
   useEffect(() => {
     if (!accessToken) return;
@@ -19,20 +17,17 @@ const Dashboard = () => {
       .get(`${API_URL}/protected`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
-      .then((res) => setData(res.data.message))
+      .then((res) => {})
       .catch(() => logout());
   }, [accessToken, logout]);
 
-  const getProtectedData = async () => {
+  const handleAccessProtectedRoute = async () => {
     try {
-      const response = await axios.get(`${API_URL}/protected`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      setMessage(response.data.message);
+      const response: any = await accessProtectedRoute();
+      setMessage(response);
     } catch (error) {
       console.error("Access denied", error);
       setMessage(error.message);
-      // setAccessToken("");
     }
   };
 
@@ -43,7 +38,9 @@ const Dashboard = () => {
 
       {accessToken && <p>Access Token: {accessToken}</p>}
 
-      <button onClick={getProtectedData}>Access Protected Route</button>
+      <button onClick={handleAccessProtectedRoute}>
+        Access Protected Route
+      </button>
       {message && <p>{message}</p>}
 
       <button onClick={logout}>Logout</button>

@@ -9,6 +9,7 @@ const AuthContext = createContext({
   login: async (user) => {},
   logout: () => {},
   refreshAccessToken: async () => {},
+  accessProtectedRoute: async () => {},
   errorMsg: "",
 });
 
@@ -37,7 +38,6 @@ export const AuthProvider = ({ children }) => {
         setAccessToken(response.data.accessToken);
         navigate("/dashboard", { replace: true });
       } catch (error) {
-        console.error("Failed >>>>>>>>.", JSON.stringify(error, null, 2));
         navigate("/", { replace: true });
       }
     };
@@ -78,7 +78,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "logout") {
-        console.log("Logout detected from another tab.");
         setAccessToken("");
         sessionStorage.removeItem("accessToken");
         navigate("/", { replace: true });
@@ -96,7 +95,6 @@ export const AuthProvider = ({ children }) => {
         {},
         { withCredentials: true }
       );
-      console.log("Refreshed access token>>>>", response.data.accessToken);
       setAccessToken(response.data.accessToken);
     } catch (error) {
       console.error("Failed to refresh access token");
@@ -104,9 +102,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const accessProtectedRoute = async () => {
+    try {
+      const response: any = await axios.get(`${API_URL}/protected`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      return response.data.message;
+    } catch (error) {
+      console.error("Access denied", error);
+      return error.message;
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ accessToken, login, logout, refreshAccessToken, errorMsg }}
+      value={{
+        accessToken,
+        login,
+        logout,
+        refreshAccessToken,
+        accessProtectedRoute,
+        errorMsg,
+      }}
     >
       {children}
     </AuthContext.Provider>
